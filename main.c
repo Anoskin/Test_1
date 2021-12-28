@@ -3,7 +3,7 @@
 #include <time.h>
 
 
-const unsigned short MAX_SIZE = 8; // фиксированная длинна очереди
+const unsigned short MAX_SIZE = 2; // фиксированная длинна очереди
 
 
 typedef struct node { /*Создаем свой тип данных узел кототорый содердит значение узла и ссылку на следующий узел*/
@@ -25,7 +25,7 @@ void queue_init(queue_t* q){
 
 //добавить в очередь
 int queue_push(queue_t* q, unsigned int val){
-    if (q->size <= MAX_SIZE){
+    if (q->size < MAX_SIZE){
         node_t* p = (node_t*)malloc(sizeof(node_t));
         if(p != NULL){
             p->val  = val;
@@ -46,7 +46,7 @@ int queue_push(queue_t* q, unsigned int val){
 size_t queue_size (queue_t* q){
 
     if (q != NULL){
-      return q->size; //функция для unix OS
+      return q->size; 
     }
     return 0;
 }
@@ -55,7 +55,6 @@ size_t queue_size (queue_t* q){
 int queue_read (queue_t* q, unsigned int index,  unsigned int *val){
 
    if (queue_size(q) > index){
-
         *val = (q->head + index)->val;
         return 1;
    }
@@ -114,32 +113,18 @@ static void read_two_queue (queue_t* q1, queue_t* q2){
    }
 }
 
-static void content(queue_t* q1, queue_t* q2){
-    unsigned int val;
-    if (queue_empty(q1) && queue_empty(q1)){
-        for (int i = 0; i < queue_size(q1) + queue_size(q2); ++i){
-           if (!queue_empty(q1) && queue_empty(q2)){
-               queue_read(q1, i, &val);
-           }
-            else if (queue_empty(q1) && !queue_empty(q2)){
-               queue_read(q2, i, &val);
-            }
-            else if (!queue_empty(q1) && !queue_empty(q2)){
-                if (i < queue_size(q1)){
-                   queue_read(q1, i, &val);
-
-                }
-                else {
-                   queue_read(q2, i - queue_size(q1), &val);
-                }
-           }
-            printf("%u ", val);
+static void content(queue_t* q){
+    node_t* p = q->head;
+    if (!queue_empty(q)){
+        while (p != NULL){
+        
+            printf("%u ", p->val);
+            p = p->next;
         }
-        printf("\n");
+            printf("\n");
        }
     else{
     puts("queue is empty ");
-
    }
 }
 
@@ -150,7 +135,6 @@ int queue_union(queue_t* q3, queue_t* q1, queue_t* q2){
     pq = &q3->head;
     eq = q3->head;
 
-    queue_init(q3);
     if((q1->head == NULL) || (q2->head == NULL)){
         printf("one of the queues is empty \n");
         return 0;
@@ -193,44 +177,112 @@ int timeout ( int seconds )
     return  1;
 }
 
+static void get_queue (queue_t* q1, queue_t* q2, queue_t* q3){
+
+    puts("Enter number queue: ");
+    unsigned int val = 0;
+    scanf("%u", &val);
+    if (val == 1){
+        content(q1);
+    }
+    else if (val == 2){
+
+        content(q2);
+    }
+    else if (val == 3){
+
+        content(q3);
+    }
+    else{
+
+        fprintf(stderr, "Incorrect queue number entered \n");
+    }
+}
+
+static void get_size (queue_t* q1, queue_t* q2, queue_t* q3){
+
+    unsigned int size = 0;
+    puts("Enter number queue: ");
+    unsigned int val = 0;
+    scanf("%u", &val);
+    if (val == 1){
+        size = (unsigned int)queue_size(q1);
+        printf ("size = %u \n", size);
+    }
+    else if (val == 2){
+
+        size = (unsigned int)queue_size(q1);
+        printf ("size = %u \n", size);
+    }
+    else if (val == 3){
+
+        size = (unsigned int)queue_size(q1);
+        printf ("size = %u \n", size);
+    }
+    else{
+
+        fprintf(stderr, "Incorrect queue number entered \n");
+    }
+
+}
+
+
+void queue_pop(queue_t* q){
+    node_t* t = q->head;
+    if(t != NULL){
+        q->head = q->head->next;
+        free(t);
+    }
+    if(q->head == NULL)
+        q->tail = NULL;
+}
 
 int main (void){
 
-   char command[4];
+   char command;
    unsigned int val = 0;
    queue_t q1, q2, q3;
    queue_init(&q1);
    queue_init(&q2);
+   queue_init(&q3);
 
    for (;;){
-        puts("Enter command : ");
-        fgets(command, 4, stdin);
-        if (*command == 'r'){ // Чтение из очереди + дополнительный параметр индекс 
-           read_two_queue(&q1, &q2);
-        }
-        else if (*command == 'w'){  // Добавления значения в очередь дополнительный пармаметр число которое надо добавить в очередь
-            puts("Enter number: ");
-            scanf("%u", &val);
-            if (!queue_push(&q1, val)){
-               if (!queue_push(&q2, val)){
-                   printf("size larger %u \n", MAX_SIZE);
-               }
+        puts("Enter command :");
+        command = getchar();
+        if (command!= '\n' && command != EOF){
+            if (command == 'r'){ // Чтение из очереди + дополнительный параметр индекс 
+                read_two_queue(&q1, &q2);
+            }
+            else if (command == 'w'){  // Добавления значения в очередь дополнительный пармаметр число которое надо добавить в очередь
+                puts("Enter number: ");
+                scanf("%u", &val);
+                if (!queue_push(&q1, val)){
+                   if (!queue_push(&q2, val)){
+                      printf("size larger %u \n", MAX_SIZE);
+                   }
+                }
+            }
+            else if (command == 's'){ // размер очереди плюс содержимое всей очереди
+                get_size(&q1, &q2, &q3);
+                get_queue(&q1, &q2, &q3);
+            }
+            else if (command ==  'c'){ // содержимое очереди
+                get_queue(&q1, &q2, &q3);
+            }
+            else if (command ==  'u'){// сличяние очереди в шахматном порядке
+                queue_union (&q3, &q1, &q2);
+            }
+            else if (command ==  'q'){
+                break;
+            }
+            else{
+                puts("Unknown commands");
             }
         }
-        else if (*command == 's'){ // размер очереди плюс содержимое всей очереди
-           unsigned int size = (unsigned int)queue_size(&q1) + queue_size(&q2);
-           printf ("size = %u \n", size);
-           content(&q1, &q2);
-        }
-        else if (*command ==  'c'){ // содержимое очереди
-            content(&q1, &q2);
-        }
-        else if (*command ==  'u'){// сличяние очереди в шахматном порядке
-           queue_union (&q3, &q1, &q2);
-        }
-        else{
-           puts("Unknown commands");
-        }
+        getchar();
    }
+   queue_pop(&q1);
+   queue_pop(&q2);
+   queue_pop(&q3);
    return 0;
 }
