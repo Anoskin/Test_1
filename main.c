@@ -80,7 +80,7 @@ static void read_two_queue(queue_t* q, int index, unsigned int val) {
         puts("index exceeds queue size");
     }
     else {
-        printf("%d", val);
+        printf("%d \n", val);
     }
 }
 
@@ -184,6 +184,29 @@ static void get_size(queue_t* q1, queue_t* q2, queue_t* q3, unsigned int val) {
 }
 
 
+void rewriting(queue_t* q1){
+    node_t* t = q1->head;
+
+    q1->head = q1->head->next;
+    q1->size--;
+    free(t);
+}
+
+
+void insert(queue_t* q1, queue_t* q2, unsigned int val) {
+
+    if (!queue_push(q1, val)) {
+    
+        if (!queue_push(q2, q1->head->val)) {
+            printf("size larger %u \n", MAX_SIZE);
+        }
+        else {
+            rewriting(q1);
+            queue_push(q1, val);
+        }
+    }
+}
+
 void queue_pop(queue_t* q) {
     node_t* t = q->head;
     if (t != NULL) {
@@ -229,11 +252,7 @@ int main(void) {
             else if (command == 'w') {  // Добавления значения в очередь 
                 puts("Enter number: ");
                 scanf_s("%u", &val);
-                if (!queue_push(&q1, val)) {
-                    if (!queue_push(&q2, val)) {
-                        printf("size larger %u \n", MAX_SIZE);
-                    }
-                }
+                insert(&q1, &q2, val);
             }
             else if (command == 's') { // размер очереди плюс содержимое всей очереди
                 puts("Enter number queue: ");
