@@ -233,9 +233,9 @@ int main(void) {
         if (command != '\n' && command != EOF) {
             if (command == 'r') { // Чтение из очереди 
                 puts("Enter number queue: ");
-                scanf_s("%u", &val);
+                scanf("%u", &val);
                 printf("Enter index: \n");
-                scanf_s("%u", &index);
+                scanf("%u", &index);
                 if (val == 1) {
                     read_two_queue(&q1, index, val);
                 }
@@ -251,18 +251,18 @@ int main(void) {
             }
             else if (command == 'w') {  // Добавления значения в очередь 
                 puts("Enter number: ");
-                scanf_s("%u", &val);
+                scanf("%u", &val);
                 insert(&q1, &q2, val);
             }
             else if (command == 's') { // размер очереди плюс содержимое всей очереди
                 puts("Enter number queue: ");
-                scanf_s("%u", &val);
+                scanf("%u", &val);
                 get_size(&q1, &q2, &q3, val);
                 get_queue(&q1, &q2, &q3, val);
             }
             else if (command == 'c') { // содержимое очереди
                 puts("Enter number queue: ");
-                scanf_s("%u", &val);
+                scanf("%u", &val);
                 get_queue(&q1, &q2, &q3, val);
             }
             else if (command == 'u') {// слияние очереди в шахматном порядке
